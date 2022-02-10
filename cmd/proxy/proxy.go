@@ -43,7 +43,7 @@ func main() {
 	proxyConfig.PulsarHost = *pulsarHost
 	proxyConfig.PulsarHttpPort = *pulsarHttpPort
 	proxyConfig.PulsarTcpPort = *pulsarTcpPort
-	proxy.Run(networkConfig, proxyConfig)
+	_ = proxy.Run(networkConfig, proxyConfig)
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 	for {

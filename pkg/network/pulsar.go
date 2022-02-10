@@ -18,11 +18,11 @@
 package network
 
 import (
-	"encoding/binary"
 	"fmt"
 	"github.com/gogo/protobuf/proto"
 	"github.com/paashzj/pulsar_go/pkg/api"
 	pb "github.com/paashzj/pulsar_go/pkg/internal/pulsar_proto"
+	"github.com/paashzj/pulsar_go/pkg/util"
 	"github.com/panjf2000/gnet"
 	"github.com/sirupsen/logrus"
 )
@@ -32,22 +32,8 @@ func Run(networkConfig *api.NetworkConfig, impl api.PulsarServer) error {
 		EventServer: nil,
 		pulsarImpl:  impl,
 	}
-	encoderConfig := gnet.EncoderConfig{
-		ByteOrder:                       binary.BigEndian,
-		LengthFieldLength:               4,
-		LengthAdjustment:                0,
-		LengthIncludesLengthFieldLength: false,
-	}
-	decoderConfig := gnet.DecoderConfig{
-		ByteOrder:           binary.BigEndian,
-		LengthFieldOffset:   0,
-		LengthFieldLength:   4,
-		LengthAdjustment:    0,
-		InitialBytesToStrip: 4,
-	}
-	codec := gnet.NewLengthFieldBasedFrameCodec(encoderConfig, decoderConfig)
 	go func() {
-		err := gnet.Serve(server, fmt.Sprintf("tcp://%s:%d", networkConfig.ListenHost, networkConfig.ListenTcpPort), gnet.WithMulticore(networkConfig.MultiCore), gnet.WithCodec(codec))
+		err := gnet.Serve(server, fmt.Sprintf("tcp://%s:%d", networkConfig.ListenHost, networkConfig.ListenTcpPort), gnet.WithMulticore(networkConfig.MultiCore), gnet.WithCodec(util.Codec))
 		logrus.Error("pulsar broker started error ", err)
 	}()
 	return nil
